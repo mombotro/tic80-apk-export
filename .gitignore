@@ -1,0 +1,6 @@
+out/
+work/
+*.keystore
+*-password.txt
+*.apk
+.DS_Store

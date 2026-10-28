@@ -1,0 +1,58 @@
+diff --git a/build/android/app/src/main/java/com/nesbox/tic/TIC.java b/build/android/app/src/main/java/com/nesbox/tic/TIC.java
+index 85a5a93..5f07001 100644
+--- a/build/android/app/src/main/java/com/nesbox/tic/TIC.java
++++ b/build/android/app/src/main/java/com/nesbox/tic/TIC.java
+@@ -26,9 +26,29 @@ public class TIC extends SDLActivity
+             sGameToLaunch = copyUriToCache(uri);
+         }
+ 
++        if (sGameToLaunch == null) {
++            sGameToLaunch = copyBundledCart();
++        }
++
+         super.onCreate(savedInstanceState);
+     }
+ 
++    private String copyBundledCart() {
++        File out = new File(getCacheDir(), "cart.tic");
++        try (InputStream in = getAssets().open("cart.tic");
++             FileOutputStream os = new FileOutputStream(out)) {
++            byte[] buffer = new byte[4096];
++            int n;
++            while ((n = in.read(buffer)) != -1) {
++                os.write(buffer, 0, n);
++            }
++            return out.getAbsolutePath();
++        } catch (Exception e) {
++            Log.e("TIC", "Error copying bundled cart", e);
++            return null;
++        }
++    }
++
+     private String copyUriToCache(Uri uri) {
+         String fileName = "cart.tic"; // A fallback filename.
+         // Get the original filename from the URI's metadata.
+@@ -72,7 +92,7 @@ public class TIC extends SDLActivity
+     @Override
+     protected String[] getArguments() {
+         if (sGameToLaunch != null) {
+-            String[] args = { sGameToLaunch };
++            String[] args = { "--skip", sGameToLaunch };
+             sGameToLaunch = null; // Clear it after use so it's not reused.
+             return args;
+         }
+diff --git a/src/studio/studio.c b/src/studio/studio.c
+index c01b556..f860769 100644
+--- a/src/studio/studio.c
++++ b/src/studio/studio.c
+@@ -3499,6 +3499,10 @@ Studio* studio_create(s32 argc, char** argv, s32 samplerate, tic80_pixel_color_f
+         else
+             setStudioMode(studio, TIC_CONSOLE_MODE);
+     }
++#else
++    // No editors: --skip goes straight to the cart, past the splash.
++    if(args.skip && studio->boot.cart)
++        runGame(studio, RUN_FROM_PLAYER);
+ #endif
+ 
+     return studio;

@@ -1,0 +1,13 @@
+diff --git a/src/studio/screens/mainmenu.c b/src/studio/screens/mainmenu.c
+index b47b493..0a243ff 100644
+--- a/src/studio/screens/mainmenu.c
++++ b/src/studio/screens/mainmenu.c
+@@ -465,7 +465,7 @@ static const MenuItem MainMenu[] =
+ #endif
+         {.label = "OPTIONS", .handler = showOptionsMenu},
+         {.label = ""},
+-        {.label = "QUIT TIC-80", .handler = onExitStudio},
++        {.label = "QUIT GAME", .handler = onExitStudio},
+ };
+ 
+ static_assert(COUNT_OF(MainMenu) == MainMenu_Quit + 1, "MainMenuCount");
